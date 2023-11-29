@@ -1,0 +1,23 @@
+image_id: Este é um identificador numérico único para cada imagem no banco de dados CRIC. Você pode usar este ID 
+para referenciar e acessar a imagem específica no site do banco de dados CRIC.
+
+image_filename: Este é o nome do arquivo da imagem tal como aparece no arquivo ZIP que você possui. É o nome do arquivo que 
+você usará para abrir e processar a imagem em seu aplicativo ou análise.
+
+image_doi: DOI (Digital Object Identifier) é um identificador único para a imagem. Este código pode ser usado 
+para acessar informações adicionais sobre a imagem em fontes digitais ou bancos de dados.
+
+cell_id: Este é um número que identifica de forma única cada célula na imagem. Assim como image_id, ele pode ser 
+usado para encontrar informações específicas da célula no banco de dados CRIC.
+
+bethesda_system: Este campo descreve a classificação da célula com base no sistema de Bethesda. As categorias incluem:
+
+"Negative for intraepithelial lesion" (Negativo para lesão intraepitelial)
+"ASC-US" (Células escamosas atípicas de significado indeterminado)
+"ASC-H" (Células escamosas atípicas, não podendo excluir lesão de alto grau)
+"LSIL" (Lesão intraepitelial escamosa de baixo grau)
+"HSIL" (Lesão intraepitelial escamosa de alto grau)
+"SCC" (Carcinoma de células escamosas)
+
+nucleus_x e nucleus_y: Estes campos representam as coordenadas x e y do núcleo da célula na imagem. Eles são números inteiros que indicam a 
+posição do núcleo na imagem, com valores variando de 1 a 1384. Essas coordenadas são essenciais para localizar e analisar as células nas imagens.
