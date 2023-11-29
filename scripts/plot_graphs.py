@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 
 cores = {'Negative for intraepithelial lesion': 'red', 'Positive for intraepithelial lesion': 'blue'}
 classes = [] # Lista para armazenar as classes   
@@ -20,4 +22,13 @@ def plot_graph_mehalanobis_binary(characteristics_and_classes):
     plt.xlabel('Área')
     plt.ylabel('Compacidade')
     plt.title('Gráfico de Dispersão por Classe')
+    plt.show()
+
+def plot_graph_mehalanobis_binary_confusion(predicted_classes, true_classes):
+    confusion_mat = confusion_matrix(true_classes, predicted_classes)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
+    plt.xlabel('Classe Prevista')
+    plt.ylabel('Classe Verdadeira')
+    plt.title('Matriz de Confusão')
     plt.show()

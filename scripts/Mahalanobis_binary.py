@@ -17,10 +17,11 @@ training_data_directory = './cell_images'
 save_directory = './models_trained/Mehalanobis_binary'
 
 characteristics_and_classes = []
+predicted_classes = []  # Lista para armazenar as classes previstas
+accuracy = ""
 
 # Calcular a distância de Mahalanobis
 def calculate_mahalanobis(class_means_dict, class_covariance_dict):
-    predicted_classes = []  # Lista para armazenar as classes previstas
     for characteristics, _ in characteristics_and_classes:
         min_distance = float('inf')
         predicted_class = None
@@ -35,23 +36,6 @@ def calculate_mahalanobis(class_means_dict, class_covariance_dict):
 
         # Opcional: Imprima a classe prevista para cada conjunto de características
         print(f'Características: {characteristics}, Classe prevista: {predicted_class}')
-
-    # Plotando o gráfico de dispersão
-    plot_graphs.plot_graph_mehalanobis_binary(characteristics_and_classes)
-    
-    # Gerando acurácia 
-    true_classes = [classe for _, classe in characteristics_and_classes]
-    accuracy = accuracy_score(true_classes, predicted_classes)
-    print(f"Acurácia: {accuracy * 100:.2f}%")
-    
-    # Gerando a matriz de confusão
-    confusion_mat = confusion_matrix(true_classes, predicted_classes)
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
-    plt.xlabel('Classe Prevista')
-    plt.ylabel('Classe Verdadeira')
-    plt.title('Matriz de Confusão')
-    plt.show()
     
 def classify_mahalanobis_binary(image_cell_path):  
     covariance_path = os.path.join(save_directory, 'class_covariance.joblib')
@@ -123,5 +107,14 @@ def classify_mahalanobis_binary(image_cell_path):
         dump(class_means_dict, means_path)
         
         print('Treinamento finalizado!!')
+
+    true_classes = [classe for _, classe in characteristics_and_classes]
+    data = dict();
+    data['characteristics_and_classes'] = characteristics_and_classes
+    data['predicted_classes'] = predicted_classes
+    data['true_classes'] = true_classes
+    data['accuracy'] = accuracy_score(true_classes, predicted_classes)
+    
+    return data
     
 
