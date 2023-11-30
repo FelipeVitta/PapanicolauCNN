@@ -37,6 +37,29 @@ def esvaziar_pasta(caminho_pasta):
             os.unlink(caminho_item)
         elif os.path.isdir(caminho_item):
             shutil.rmtree(caminho_item)
+            
+ # Crescimento de regiões           
+def region_growing(image, seed):
+    # Parâmetros
+    neighbors = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    height, width = image.shape
+    segmented = np.zeros_like(image, dtype=np.uint8)
+    threshold = image[seed] * 1.25
+
+    # Pilha para armazenar os pixels a serem verificados
+    stack = [seed]
+
+    while stack:
+        x, y = stack.pop()
+        # Determinando se o pixel vai ser 0 ou 1 de acordo com o limiar
+        if segmented[x, y] == 0 and image[x, y] <= threshold:
+            segmented[x, y] = 255  # Segmentar o pixel
+            for dx, dy in neighbors:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < height and 0 <= ny < width:
+                    stack.append((nx, ny))
+
+    return segmented
          
 
 def get_characteristics(file_path):
@@ -55,18 +78,19 @@ def get_characteristics(file_path):
         output_path = os.path.join(output_folder, f'{index}.png')
         cropped_image.save(output_path)
         cropped_image_np = cv2.imread(output_path, cv2.IMREAD_GRAYSCALE)
-                          
-        # Aplicar a limiarização
-        centro_y, centro_x = cropped_image_np.shape[0] // 2, cropped_image_np.shape[1] // 2
-        blurred_image = cv2.GaussianBlur(cropped_image_np, (5, 5), 0)
-        # limiar baseado no ponto central
-        valor_pixel_central = blurred_image[centro_y, centro_x] * 1.37
-        _, img_thresholded = cv2.threshold(
-            blurred_image, valor_pixel_central, 255, cv2.THRESH_BINARY)
+            
+        # Definindo as coordenadas da semente como o centro da imagem
+        centro_x, centro_y = cropped_image_np.shape[1] // 2, cropped_image_np.shape[0] // 2
+        seed = (centro_x, centro_y)
+            
+        # Aplicar o algoritmo de crescimento de regiões
+        segmented_image = region_growing(cropped_image_np, seed)
+        # Aplicar o Gaussian blur
+        blurred_image = cv2.GaussianBlur(segmented_image, (5, 5), 0)
         
         # Aplicar o detector de bordas Sobel
-        sobelx = cv2.Sobel(img_thresholded, cv2.CV_64F, 1, 0, ksize=3)
-        sobely = cv2.Sobel(img_thresholded, cv2.CV_64F, 0, 1, ksize=3)
+        sobelx = cv2.Sobel(blurred_image, cv2.CV_64F, 1, 0, ksize=3)
+        sobely = cv2.Sobel(blurred_image, cv2.CV_64F, 0, 1, ksize=3)
         sobel = cv2.magnitude(sobelx, sobely)
         
         # Encontrar contornos
@@ -113,7 +137,7 @@ def get_characteristics(file_path):
                 excentricidade = 0
 
             cv2.circle(cropped_image_np, (centro_x, centro_y), 2, (255, 0, 0), -1)
-            #print(f'Área: {area}, Perímetro: {perimetro}, Compacidade: {compacidade}, Circularidade: {circularidade}, Excentricidade: {excentricidade}, Classe: {actual_class}')
+        #print(f'Área: {area}, Perímetro: {perimetro}, Compacidade: {compacidade}, Circularidade: {circularidade}, Excentricidade: {excentricidade}, Classe: {actual_class}')
 
         # Adicione os valores à lista
         characteristics_list.append((index, excentricidade, area, compacidade, actual_class))
@@ -127,6 +151,6 @@ def get_characteristics(file_path):
     # Retorna a lista de características
     return characteristics_list
 
-#get_characteristics('./cell_images/1f8274db391ed2747c0c3a8560bf6d3a.png')
+
 
 

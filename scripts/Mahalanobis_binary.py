@@ -46,6 +46,12 @@ def classify_mahalanobis_binary(image_cell_path):
         # Carregando as matrizes de covariância e médias
         class_covariance_dict = load(covariance_path)
         class_means_dict = load(means_path)
+        
+        # Redefinindo os valores das variáveis a cada execução da função
+        global characteristics_and_classes
+        global predicted_classes 
+        characteristics_and_classes = []
+        predicted_classes = []  
 
         # Extraindo caracteristicas dos núcleos da imagem
         feat = nucleus_detection.get_characteristics(image_cell_path)
@@ -77,8 +83,9 @@ def classify_mahalanobis_binary(image_cell_path):
                 classe = characteristic[4]
                 if(classe != 'Negative for intraepithelial lesion'):
                     classe = 'Positive for intraepithelial lesion'
-            
-                characteristics_and_classes.append(([area, excentricidade, compacidade], classe)) 
+                # Area minima para considerar na contagem das métricas
+                if area > 100:                        
+                    characteristics_and_classes.append(([area, excentricidade, compacidade], classe)) 
             
         # Calcular a média e a matriz de covariância para cada classe
         class_covariance_dict = {}
@@ -115,6 +122,9 @@ def classify_mahalanobis_binary(image_cell_path):
     data['true_classes'] = true_classes
     data['accuracy'] = accuracy_score(true_classes, predicted_classes)
     
+    print(f"Acurácia: {data['accuracy'] * 100:.2f}%")
+    
     return data
+
     
 
