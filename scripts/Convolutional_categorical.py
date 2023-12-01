@@ -13,6 +13,7 @@ print(labels)
 # print(train_labels)
 # print(val_labels)
 
+
 datagen = ImageDataGenerator(
     shear_range=0.2,
     zoom_range=0.2,
