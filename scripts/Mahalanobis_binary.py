@@ -14,7 +14,7 @@ import plot_graphs
 from sklearn.metrics import accuracy_score
 
 training_data_directory = './cell_images'
-save_directory = './models_trained/Mehalanobis_binary'
+save_directory = './models_trained/Mahalanobis_binary'
 
 characteristics_and_classes = []
 predicted_classes = []  # Lista para armazenar as classes previstas
