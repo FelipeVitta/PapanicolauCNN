@@ -30,8 +30,8 @@ def plot_graph_mehalanobis_binary_confusion(predicted_classes, true_classes):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
-    plt.xlabel('Classe Prevista')
-    plt.ylabel('Classe Verdadeira')
+    plt.xlabel('Classe Verdadeira')
+    plt.ylabel('Classe Prevista')
     plt.title('Matriz de Confusão')
     plt.show()
     
