@@ -34,7 +34,10 @@ def calculate_mahalanobis(class_means_dict, class_covariance_dict):
                 min_distance = mahalanobis_distance
                 predicted_class = classe
         predicted_classes.append(predicted_class)        
-        #print(f'Características: {characteristics}, Classe prevista: {predicted_class}')     
+        
+        # Opcional: Imprima a classe prevista para cada conjunto de características
+        characteristics_and_predicted_classes.append((characteristics, predicted_class))
+        print(f'Características: {characteristics}, Classe prevista: {predicted_class}')
     
 def classify_mahalanobis(image_cell_path):  
     covariance_path = os.path.join(save_directory, 'class_covariance.joblib')
@@ -48,8 +51,10 @@ def classify_mahalanobis(image_cell_path):
 
         # Redefinindo os valores das variáveis a cada execução da função
         global characteristics_and_classes
+        global characteristics_and_predicted_classes
         global predicted_classes 
         characteristics_and_classes = []
+        characteristics_and_predicted_classes = []
         predicted_classes = []  
         
         # Extraindo caracteristicas dos núcleos da imagem
