@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv('classifications.csv')
 
 # Output das imagens 100 x 100 dos núcleos
-output_folder = './image_nucleus'  
+output_folder = './image_nucleus'
 
 # Carregar a imagem em escala de cinza
 image_path = ''  # Variável global

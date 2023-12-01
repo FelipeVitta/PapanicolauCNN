@@ -20,7 +20,7 @@ def cut_image(image_path, cell_id, x, y, size=100):
     
 # Se ainda não existir a pasta de output das imagens, então criar    
 if not os.path.exists(output_folder):
-    os.makedirs(output_folder)  
+    os.makedirs(output_folder)
 
 with open(path_file, newline='', encoding='utf-8') as arquivo_csv:
     leitor_csv = csv.DictReader(arquivo_csv)

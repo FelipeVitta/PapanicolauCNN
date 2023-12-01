@@ -14,7 +14,7 @@ import plot_graphs
 from sklearn.metrics import accuracy_score
 
 training_data_directory = './cell_images'
-save_directory = './models_trained/Mehalanobis'
+save_directory = './models_trained/Mahalanobis_categorical'
 
 characteristics_and_classes = []
 predicted_classes = []  # Lista para armazenar as classes previstas
@@ -50,7 +50,7 @@ def classify_mahalanobis(image_cell_path):
         global characteristics_and_classes
         global predicted_classes 
         characteristics_and_classes = []
-        predicted_classes = []  
+        predicted_classes = []
         
         # Extraindo caracteristicas dos núcleos da imagem
         feat = nucleus_detection.get_characteristics(image_cell_path)
