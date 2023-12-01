@@ -10,10 +10,6 @@ save_directory = './models_trained/Convolutional_categorical'
 labels = os.listdir(input_folder)
 print(labels)
 
-# print(train_labels)
-# print(val_labels)
-
-
 datagen = ImageDataGenerator(
     shear_range=0.2,
     zoom_range=0.2,
