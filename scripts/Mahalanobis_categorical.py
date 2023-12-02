@@ -16,6 +16,7 @@ from sklearn.metrics import accuracy_score
 training_data_directory = './cell_images'
 save_directory = './models_trained/Mahalanobis_categorical'
 
+characteristics_and_predicted_classes = []
 characteristics_and_classes = []
 predicted_classes = []  # Lista para armazenar as classes previstas
 accuracy = ""
@@ -23,6 +24,8 @@ accuracy = ""
 
 # Calcular a distância de Mahalanobis
 def calculate_mahalanobis(class_means_dict, class_covariance_dict):
+    global characteristics_and_predicted_classes
+    characteristics_and_predicted_classes = []
     for characteristics, _ in characteristics_and_classes:
         min_distance = float('inf')
         predicted_class = None
@@ -34,7 +37,8 @@ def calculate_mahalanobis(class_means_dict, class_covariance_dict):
                 min_distance = mahalanobis_distance
                 predicted_class = classe
         predicted_classes.append(predicted_class)        
-        #print(f'Características: {characteristics}, Classe prevista: {predicted_class}')     
+        
+        characteristics_and_predicted_classes.append([characteristics[0], characteristics[1], characteristics[2], predicted_class]) 
     
 def classify_mahalanobis(image_cell_path):  
     covariance_path = os.path.join(save_directory, 'class_covariance.joblib')
@@ -114,17 +118,18 @@ def classify_mahalanobis(image_cell_path):
     data = dict();
     data['characteristics_and_classes'] = characteristics_and_classes
     data['predicted_classes'] = predicted_classes
+    data['characteristics_and_predicted_classes'] = characteristics_and_predicted_classes
     data['true_classes'] = true_classes
     data['accuracy'] = accuracy_score(true_classes, predicted_classes)
     #acuracias.append(data['accuracy'] * 100)
     
-    print(f"Acurácia: {data['accuracy'] * 100:.2f}%")
-    plot_graphs.plot_graph_mehalanobis(characteristics_and_classes)
-    plot_graphs.plot_graph_mehalanobis_confusion(predicted_classes,true_classes)   
+    # print(f"Acurácia: {data['accuracy'] * 100:.2f}%")
+    # plot_graphs.plot_graph_mahalanobis(characteristics_and_classes)
+    # plot_graphs.plot_graph_mahalanobis_confusion(predicted_classes,true_classes)   
     
     return data
 
-classify_mahalanobis('./cell_images/fcc9c7e2fc1a0f4d30fa745308d15194.png')
+# classify_mahalanobis('./cell_images/fcc9c7e2fc1a0f4d30fa745308d15194.png')
                      
 # conts = os.listdir(training_data_directory)
 # i = 0
