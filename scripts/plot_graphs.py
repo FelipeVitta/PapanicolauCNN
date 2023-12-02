@@ -7,8 +7,8 @@ classes = [] # Lista para armazenar as classes
 areas = []
 compacidades = []
 
-# Mehalanobis binário - plotar o gráfico de dispersão
-def plot_graph_mehalanobis_binary(characteristics_and_classes):
+# Mahalanobis binário - plotar o gráfico de dispersão
+def plot_graph_mahalanobis_binary(characteristics_and_classes):
     for carac, classe in characteristics_and_classes:
         classes.append('Positive for intraepithelial lesion' if classe != 'Negative for intraepithelial lesion' else classe)   
         areas.append(carac[0])
@@ -25,20 +25,20 @@ def plot_graph_mehalanobis_binary(characteristics_and_classes):
     plt.title('Gráfico de Dispersão por Classe')
     plt.show()
     
-# Mehalanobis binário - plotar matriz de confusão
-def plot_graph_mehalanobis_binary_confusion(predicted_classes, true_classes):
+# Mahalanobis binário - plotar matriz de confusão
+def plot_graph_mahalanobis_binary_confusion(predicted_classes, true_classes):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
-    plt.xlabel('Classe Prevista')
-    plt.ylabel('Classe Verdadeira')
+    plt.xlabel('Classe Verdadeira')
+    plt.ylabel('Classe Prevista')
     plt.title('Matriz de Confusão')
     plt.show()
     
 cores2 = {'Negative for intraepithelial lesion': 'black', 'ASC-H': 'blue', 'ASC-US':'yellow', 'HSIL':'purple', 'LSIL':'gray', 'SCC':'pink'}
    
-# Mehalanobis - plotar o gráfico de dispersão
-def plot_graph_mehalanobis(characteristics_and_classes):
+# Mahalanobis - plotar o gráfico de dispersão
+def plot_graph_mahalanobis(characteristics_and_classes):
     for carac, classe in characteristics_and_classes:
         classes.append(classe) 
         areas.append(carac[0])
@@ -55,8 +55,8 @@ def plot_graph_mehalanobis(characteristics_and_classes):
     plt.title('Gráfico de Dispersão por Classe')
     plt.show()
     
- # Mehalanobis - plotar matriz de confusão   
-def plot_graph_mehalanobis_confusion(predicted_classes, true_classes):
+ # Mahalanobis - plotar matriz de confusão   
+def plot_graph_mahalanobis_confusion(predicted_classes, true_classes):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
