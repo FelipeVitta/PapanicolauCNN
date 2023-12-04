@@ -118,7 +118,7 @@ else:
     model.compile(optimizer=optimizers.Adam(learning_rate=1e-4), loss='categorical_crossentropy', metrics=['accuracy'])
 
     # Treina o modelo
-    epochs = 50
+    epochs = 20
     history = model.fit(
         train_generator,
         epochs=epochs,
