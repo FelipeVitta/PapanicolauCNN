@@ -5,6 +5,7 @@ import Mahalanobis_binary
 import Mahalanobis_categorical
 import re
 import plot_graphs
+import nucleus_detection
 import os
 import shutil
 import tempfile
@@ -42,6 +43,7 @@ def copy_images_to_temp_folder():
 
 def display_nucleus():
     max_column_number = 15
+    nucleus_count = len(os.listdir(temp_folder))
 
     scrollable_frame.nucleus_frame = ctk.CTkFrame(scrollable_frame)
     scrollable_frame.nucleus_frame.grid(row=3, column=0, padx=10, pady=10)
@@ -245,13 +247,23 @@ def upload_image():
         scrollable_frame.display_results_frame = ctk.CTkFrame(scrollable_frame)
         scrollable_frame.display_results_frame.grid(row=4, column=0, padx=10, pady=10)
 
-        mahalanobis_binary_response = Mahalanobis_binary.classify_mahalanobis_binary(result)
+        nucleus_info = []
+        feat = nucleus_detection.get_characteristics(result)
+        for characteristic in feat:
+            excentricidade = characteristic[1]
+            area = characteristic[2]
+            compacidade = characteristic[3]
+            classe = characteristic[4]
+            nucleus_info.append(([area, excentricidade, compacidade], classe)) 
+
+        # exibir tabelas
+        mahalanobis_binary_response = Mahalanobis_binary.classify_mahalanobis_binary(result, nucleus_info)
         display_mahalanobis_binary_results(mahalanobis_binary_response, scrollable_frame.display_results_frame)
 
-        mahalanobis_response = Mahalanobis_categorical.classify_mahalanobis(result)
+        mahalanobis_response = Mahalanobis_categorical.classify_mahalanobis(result, nucleus_info)
         display_mahalanobis_results(mahalanobis_response, scrollable_frame.display_results_frame)
 
-        display_nucleus()
+        display_nucleus(nucleus_info[0])
 
 
 # Configurações iniciais da janela
