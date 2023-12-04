@@ -40,7 +40,7 @@ def calculate_mahalanobis(class_means_dict, class_covariance_dict):
         
         characteristics_and_predicted_classes.append([characteristics[0], characteristics[1], characteristics[2], predicted_class]) 
     
-def classify_mahalanobis(image_cell_path):  
+def classify_mahalanobis(image_cell_path, nucleus_info):  
     covariance_path = os.path.join(save_directory, 'class_covariance.joblib')
     means_path = os.path.join(save_directory, 'class_means.joblib')
 
@@ -53,17 +53,10 @@ def classify_mahalanobis(image_cell_path):
         # Redefinindo os valores das variáveis a cada execução da função
         global characteristics_and_classes
         global predicted_classes 
-        characteristics_and_classes = []
+        
+        characteristics_and_classes = nucleus_info
         predicted_classes = []
         
-        # Extraindo caracteristicas dos núcleos da imagem
-        feat = nucleus_detection.get_characteristics(image_cell_path)
-        for characteristic in feat:
-            excentricidade = characteristic[1]
-            area = characteristic[2]
-            compacidade = characteristic[3]
-            classe = characteristic[4]
-            characteristics_and_classes.append(([area, excentricidade, compacidade], classe)) 
         # Calculando a partir das caracteristicas extraidas dos núcleos       
         calculate_mahalanobis(class_means_dict, class_covariance_dict)
     else:
@@ -121,32 +114,7 @@ def classify_mahalanobis(image_cell_path):
     data['characteristics_and_predicted_classes'] = characteristics_and_predicted_classes
     data['true_classes'] = true_classes
     data['accuracy'] = accuracy_score(true_classes, predicted_classes)
-    #acuracias.append(data['accuracy'] * 100)
-    
-    # print(f"Acurácia: {data['accuracy'] * 100:.2f}%")
-    # plot_graphs.plot_graph_mahalanobis(characteristics_and_classes)
-    # plot_graphs.plot_graph_mahalanobis_confusion(predicted_classes,true_classes)   
     
     print('\t FIM Mahalanobis Categórico')
 
     return data
-
-# classify_mahalanobis('./cell_images/fcc9c7e2fc1a0f4d30fa745308d15194.png')
-                     
-# conts = os.listdir(training_data_directory)
-# i = 0
-# for image in conts:
-#     if i > 200:
-#         break
-#     i = i + 1
-#     #print(f'imagem: {image}')
-#     image_pathss = os.path.join(training_data_directory, image)
-#     classify_mahalanobis(image_pathss)
-
-# print('MEDIAAA:')
-# print(np.mean(acuracias))
-    
-
-
-
-
