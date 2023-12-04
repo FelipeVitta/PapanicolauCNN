@@ -18,6 +18,8 @@ table_bg_color = "#383838"
 negative_txt_color = "#c71f1f"
 positive_txt_color = "#2cac1b"
 
+zoom_count = 0
+
 def load_image_button():
     insert_image_btn = ctk.CTkButton(
         scrollable_frame, 
@@ -42,7 +44,7 @@ def display_nucleus():
     max_column_number = 15
 
     scrollable_frame.nucleus_frame = ctk.CTkFrame(scrollable_frame)
-    scrollable_frame.nucleus_frame.grid(row=2, column=0, padx=10, pady=10)
+    scrollable_frame.nucleus_frame.grid(row=3, column=0, padx=10, pady=10)
 
     nucleus_frame_title = ctk.CTkLabel(scrollable_frame.nucleus_frame, text="Núcleos Identificados", font=title_font)
     nucleus_frame_title.grid(row=0, column=0, pady=20, columnspan=max_column_number)
@@ -160,7 +162,6 @@ def display_mahalanobis_binary_results(ai_response, frame):
         graph_btn_function=show_graph, 
         confusion_graph_btn_function=show_confusion_graph)
     
-    
 def display_mahalanobis_results(ai_response, frame):
     true_classes = ai_response['true_classes']
     characteristics_and_classes = ai_response['characteristics_and_classes']
@@ -184,6 +185,21 @@ def display_mahalanobis_results(ai_response, frame):
         negative_display_text="Negativo p/ LI",
         positive_display_text="Positivo p/ LI")
    
+def zoom_in(image):
+    new_size = (int(image._size[0] * 1.2), int(image._size[1] * 1.2))
+    global zoom_count
+    if(zoom_count < 5):
+        zoom_count += 1
+        image.configure(size=new_size)
+
+def zoom_out(image):
+    new_size = (int(image._size[0] / 1.2), int(image._size[1] / 1.2))
+    global zoom_count
+    if(zoom_count > -5):
+        zoom_count -= 1
+        image.configure(size=new_size)
+
+
 def upload_image():
     file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg *.jpeg *.png")]) # abre janela de dialogo
 
@@ -200,13 +216,34 @@ def upload_image():
             result = "./cell_images/"+match.group(1)
             print(result)
       
+        scrollable_frame.zoom_buttons_frame = ctk.CTkFrame(scrollable_frame)
+        scrollable_frame.zoom_buttons_frame.grid(row=1, column=0, pady=(10, 0))
+
+        zoom_in_button = ctk.CTkButton(
+            scrollable_frame.zoom_buttons_frame, 
+            text='+', 
+            command=lambda: zoom_in(photo), 
+            width=30, 
+            fg_color=button_color, 
+            hover_color=button_hover_color)
+        zoom_in_button.grid(row=0, column=0, padx=10)
+
+        zoom_out_button = ctk.CTkButton(
+            scrollable_frame.zoom_buttons_frame, 
+            text='-', 
+            command=lambda: zoom_out(photo), 
+            width=30, 
+            fg_color=button_color, 
+            hover_color=button_hover_color)
+        zoom_out_button.grid(row=0, column=1, padx=10)
+
         # exibir imagem escolhida
         photo = ctk.CTkImage(light_image=Image.open(file_path), size=(480, 360))
         label_image = ctk.CTkLabel(scrollable_frame, text='', image=photo)
-        label_image.grid(row=1, column=0, pady=(20))  
-        
+        label_image.grid(row=2, column=0, pady=(20))  
+
         scrollable_frame.display_results_frame = ctk.CTkFrame(scrollable_frame)
-        scrollable_frame.display_results_frame.grid(row=3, column=0, padx=10, pady=10)
+        scrollable_frame.display_results_frame.grid(row=4, column=0, padx=10, pady=10)
 
         mahalanobis_binary_response = Mahalanobis_binary.classify_mahalanobis_binary(result)
         display_mahalanobis_binary_results(mahalanobis_binary_response, scrollable_frame.display_results_frame)

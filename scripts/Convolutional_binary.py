@@ -111,15 +111,15 @@ else:
 
     model.compile(optimizer=optimizers.Adam(learning_rate=1e-4), 
                   loss='categorical_crossentropy', 
-                  metrics=['accuracy'],
-                  class_weight=class_weights_dict)
+                  metrics=['accuracy'])
 
     # Treinando o modelo
-    epochs = 5
+    epochs = 1
     history = model.fit(
         train_generator,
         epochs=epochs,
-        validation_data=val_generator
+        validation_data=val_generator,
+        class_weight=class_weights_dict  # Aplicando a ponderação aqui
     )
 
     model.save(model_path)
