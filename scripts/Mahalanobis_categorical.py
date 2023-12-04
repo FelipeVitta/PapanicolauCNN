@@ -45,7 +45,7 @@ def classify_mahalanobis(image_cell_path):
     means_path = os.path.join(save_directory, 'class_means.joblib')
 
     if os.path.exists(covariance_path) and os.path.exists(means_path):
-        print('Classificando...')
+        print('Executando Mahalanobis Categórico...')
         # Carregando as matrizes de covariância e médias
         class_covariance_dict = load(covariance_path)
         class_means_dict = load(means_path)
@@ -127,6 +127,8 @@ def classify_mahalanobis(image_cell_path):
     # plot_graphs.plot_graph_mahalanobis(characteristics_and_classes)
     # plot_graphs.plot_graph_mahalanobis_confusion(predicted_classes,true_classes)   
     
+    print('\t FIM Mahalanobis Categórico')
+
     return data
 
 # classify_mahalanobis('./cell_images/fcc9c7e2fc1a0f4d30fa745308d15194.png')
