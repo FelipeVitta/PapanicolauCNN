@@ -1,4 +1,3 @@
-from tkinter import CENTER
 import customtkinter as ctk
 from customtkinter import filedialog
 from PIL import Image, ImageTk

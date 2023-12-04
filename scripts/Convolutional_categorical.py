@@ -5,7 +5,10 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras import models, layers, optimizers
 from tensorflow.keras import regularizers
+from tensorflow.keras.callbacks import ModelCheckpoint
+
 import numpy as np
+from sklearn.utils import class_weight
 import os
 
 input_folder = './output_cell_images'
@@ -62,10 +65,27 @@ val_generator = datagen.flow_from_directory(
     classes=labels
 )
 
+class_weights = class_weight.compute_class_weight(
+    class_weight='balanced',
+    classes=np.unique(labels),
+    y=labels
+)
+class_weights_dict = dict(enumerate(class_weights))
+
+checkpoint_filepath = os.path.join(save_directory, 'best_model.h5')
+
+model_checkpoint = ModelCheckpoint(
+    filepath=checkpoint_filepath,
+    monitor='val_loss',
+    save_best_only=True,
+    mode='min',
+    verbose=1
+)
+
 # Carregar modelo se existir, caso contrário, criar um novo
-if os.path.exists(model_path):
+if os.path.exists(checkpoint_filepath):
     print("Modelo carregado com sucesso.")
-    model = load_model(model_path)
+    model = load_model(checkpoint_filepath)
     diretorio_imagens = './image_nucleus'
      # Percorrer todas as imagens no diretório
     for nome_arquivo in os.listdir(diretorio_imagens):
@@ -93,13 +113,13 @@ else:
     model.compile(optimizer=optimizers.Adam(learning_rate=1e-4), loss='categorical_crossentropy', metrics=['accuracy'])
 
     # Treina o modelo
-    epochs = 7
+    epochs = 20
     history = model.fit(
         train_generator,
         epochs=epochs,
-        validation_data=val_generator
+        validation_data=val_generator,
+        class_weight=class_weights_dict,
+        callbacks=[model_checkpoint]
     )
 
     model.save(model_path)
-
-
