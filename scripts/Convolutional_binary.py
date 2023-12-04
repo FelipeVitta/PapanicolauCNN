@@ -6,7 +6,9 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.applications import EfficientNetB0
 from tensorflow.keras import models, layers, optimizers
 from tensorflow.keras.models import load_model
+from tensorflow.keras.callbacks import ModelCheckpoint
 import numpy as np
+from collections import Counter
 import os
 
 input_folder = './output_cell_images'
@@ -41,8 +43,8 @@ def classify_image(file_path, model, img_size, labels):
     img_ready = prepare_image(file_path, img_size)
     predictions = model.predict(img_ready)
     predicted_class = np.argmax(predictions, axis=1)
-    predicted_label = labels[predicted_class[0]]
-
+    predicted_label = index_to_label[predicted_class[0]]
+    
     return predicted_label
 
 for folder_name in os.listdir(input_folder):
@@ -58,10 +60,21 @@ for folder_name in os.listdir(input_folder):
 
             dataset.append(image)
             labels.append(class_label)
+            
+# Contagem das imagens para cada classe
+# class_counts = Counter(labels)
+# for class_label, count in class_counts.items():
+#     print(f"Classe '{class_label}': {count} imagens")
 
 dataset = np.array(dataset)
-labels_encoded = LabelEncoder().fit_transform(labels)
+label_encoder = LabelEncoder()
+labels_encoded = label_encoder.fit_transform(labels)
 labels_categorical = to_categorical(labels_encoded)
+labels_unique = np.unique(labels_encoded)
+
+# Criar um dicionário para mapear de volta os índices para rótulos de classe
+index_to_label = {i: label for i, label in enumerate(label_encoder.classes_)}
+
 
 X_train, X_val, y_train, y_val = train_test_split(dataset, labels_categorical, test_size=0.2, random_state=42)
 
@@ -79,15 +92,26 @@ val_generator = val_datagen.flow(X_val, y_val, batch_size=32)
 # Calcula os pesos das classes de forma que classes com menos amostras tenham um peso maior
 class_weights = class_weight.compute_class_weight(
     class_weight='balanced',
-    classes=np.unique(labels_encoded),
+    classes=labels_unique,
     y=labels_encoded
 )
 
 class_weights_dict = dict(enumerate(class_weights))
+print("Pesos das Classes:", class_weights_dict)
 
-if os.path.exists(model_path):
+checkpoint_path = os.path.join(save_directory, "model_checkpoint.h5")
+checkpoint = ModelCheckpoint(
+    filepath=checkpoint_path,
+    monitor='val_loss',
+    verbose=1,
+    save_best_only=True,
+    mode='min',
+    save_weights_only=False
+)
+
+if os.path.exists(checkpoint_path):
     print("Modelo carregado com sucesso.")
-    model = load_model(model_path)
+    model = load_model(checkpoint_path)
     diretorio_imagens = './image_nucleus'
      # Percorrer todas as imagens no diretório
     for nome_arquivo in os.listdir(diretorio_imagens):
@@ -109,17 +133,18 @@ else:
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(len(np.unique(labels_encoded)), activation='softmax'))
 
-    model.compile(optimizer=optimizers.Adam(learning_rate=1e-4), 
+    model.compile(optimizer=optimizers.Adam(learning_rate=0.01), 
                   loss='categorical_crossentropy', 
-                  metrics=['accuracy'],
-                  class_weight=class_weights_dict)
+                  metrics=['accuracy'])
 
-    # Treinando o modelo
-    epochs = 5
+     # Treinando o modelo com a ponderação de classes
+    epochs = 50
     history = model.fit(
         train_generator,
         epochs=epochs,
-        validation_data=val_generator
+        validation_data=val_generator,
+        class_weight=class_weights_dict,  # Aplicando a ponderação aqui
+        callbacks=[checkpoint]  # Inclui o checkpoint aqui
     )
 
     model.save(model_path)
