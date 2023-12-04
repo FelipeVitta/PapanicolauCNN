@@ -39,12 +39,12 @@ def calculate_mahalanobis(class_means_dict, class_covariance_dict):
 
         characteristics_and_predicted_classes.append([characteristics[0], characteristics[1], characteristics[2], predicted_class]) 
     
-def classify_mahalanobis_binary(image_cell_path):  
+def classify_mahalanobis_binary(image_cell_path, nucleus_info):  
     covariance_path = os.path.join(save_directory, 'class_covariance.joblib')
     means_path = os.path.join(save_directory, 'class_means.joblib')
 
     if os.path.exists(covariance_path) and os.path.exists(means_path):
-        print('Classificando...')
+        print('Executando Mahalanobis Binário...')
         # Carregando as matrizes de covariância e médias
         class_covariance_dict = load(covariance_path)
         class_means_dict = load(means_path)
@@ -53,19 +53,9 @@ def classify_mahalanobis_binary(image_cell_path):
         global characteristics_and_classes
         global predicted_classes 
         
-        characteristics_and_classes = []
+        characteristics_and_classes = nucleus_info
         predicted_classes = []  
 
-        # Extraindo caracteristicas dos núcleos da imagem
-        feat = nucleus_detection.get_characteristics(image_cell_path)
-        for characteristic in feat:
-            excentricidade = characteristic[1]
-            area = characteristic[2]
-            compacidade = characteristic[3]
-            classe = characteristic[4]
-            if(classe != 'Negative for intraepithelial lesion'):
-                classe = 'Positive for intraepithelial lesion'
-            characteristics_and_classes.append(([area, excentricidade, compacidade], classe)) 
         # Calculando a partir das caracteristicas extraidas dos núcleos       
         calculate_mahalanobis(class_means_dict, class_covariance_dict)
     else:
@@ -126,6 +116,8 @@ def classify_mahalanobis_binary(image_cell_path):
     data['true_classes'] = true_classes
     data['accuracy'] = accuracy_score(true_classes, predicted_classes)
     
+    print('\t FIM Mahalanobis Binário')
+
     return data
 
     

@@ -154,3 +154,4 @@ def get_characteristics(file_path):
 
 
 
+get_characteristics('./cell_images/0a2a5a681410054941cc56f51eb8fbda')
