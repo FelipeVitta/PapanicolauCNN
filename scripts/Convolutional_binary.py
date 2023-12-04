@@ -136,7 +136,6 @@ else:
     model.compile(optimizer=optimizers.Adam(learning_rate=0.01), 
                   loss='categorical_crossentropy', 
                   metrics=['accuracy'])
-                  metrics=['accuracy'])
 
      # Treinando o modelo com a ponderação de classes
     epochs = 50

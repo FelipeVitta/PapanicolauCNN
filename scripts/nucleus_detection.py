@@ -74,8 +74,9 @@ def get_characteristics(file_path):
     # Passando por todos os núcleos daquela imagem
     for index, row in linhas_filtradas.iterrows():
         actual_class = row['bethesda_system']
+        cell_id = row['cell_id']
         cropped_image = cut_image(row['nucleus_x'], row['nucleus_y'])
-        output_path = os.path.join(output_folder, f'{index}.png')
+        output_path = os.path.join(output_folder, f'{cell_id}.png')
         cropped_image.save(output_path)
         cropped_image_np = cv2.imread(output_path, cv2.IMREAD_GRAYSCALE)
             
@@ -140,7 +141,7 @@ def get_characteristics(file_path):
         #print(f'Área: {area}, Perímetro: {perimetro}, Compacidade: {compacidade}, Circularidade: {circularidade}, Excentricidade: {excentricidade}, Classe: {actual_class}')
 
         # Adicione os valores à lista
-        characteristics_list.append((index, excentricidade, area, compacidade, actual_class))
+        characteristics_list.append((cell_id, excentricidade, area, compacidade, actual_class))
                 
         #cv2.imshow('Imagem com Centro de Contorno Central', cropped_image_np)
 
@@ -152,6 +153,4 @@ def get_characteristics(file_path):
     return characteristics_list
 
 
-
-
-get_characteristics('./cell_images/0a2a5a681410054941cc56f51eb8fbda')
+get_characteristics('./cell_images/e8795423a9b8dadabdfaac3547c17abe.png')

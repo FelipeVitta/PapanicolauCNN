@@ -27,12 +27,12 @@ def prepare_image(file_path, img_size):
     return img_array
 
 # Função para fazer a previsão
-def classify_image(file_path, model, img_size, labels):
+def classify_image(file_path, model, img_size):
     img_ready = prepare_image(file_path, img_size)
     predictions = model.predict(img_ready)
     predicted_class = np.argmax(predictions, axis=1)
-    predicted_label = labels[predicted_class[0]]
-
+    predicted_label = index_to_label[predicted_class[0]]
+    print(predictions)
     return predicted_label
 
 labels = os.listdir(input_folder)
@@ -55,6 +55,11 @@ train_generator = datagen.flow_from_directory(
     subset='training',
     classes=labels
 )
+
+# Obter o mapeamento de class_indices do gerador
+class_indices = train_generator.class_indices
+# Criar um mapeamento reverso
+index_to_label = {v: k for k, v in class_indices.items()}
 
 val_generator = datagen.flow_from_directory(
     input_folder,
@@ -92,7 +97,7 @@ if os.path.exists(checkpoint_filepath):
         # Montar o caminho completo da imagem
         img_path = os.path.join(diretorio_imagens, nome_arquivo)
         # Classificar a imagem
-        predicted_label = classify_image(img_path, model, img_size, labels)
+        predicted_label = classify_image(img_path, model, img_size)
         print(f"Classe prevista para {nome_arquivo}: {predicted_label}")
         predicted_classes.append(predicted_label)
         
