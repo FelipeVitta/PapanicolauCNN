@@ -14,6 +14,7 @@ import os
 input_folder = './output_cell_images'
 save_directory = './models_trained/Convolutional_binary'
 model_path = os.path.join(save_directory, 'efficientnet_model.h5')
+checkpoint_path = os.path.join(save_directory, "model_checkpoint2.h5")
 
 class_mapping = {
     'ASC-H': 'Positive for intraepithelial lesion',
@@ -28,6 +29,7 @@ dataset = []
 labels = []
 predicted_classes = []
 img_size = (100, 100)
+index_to_label = {0: 'Negative for intraepithelial lesion', 1: 'Positive for intraepithelial lesion'}
 
 # Função para preparar uma imagem para classificação
 def prepare_image(file_path, img_size):
@@ -47,68 +49,6 @@ def classify_image(file_path, model, img_size, labels):
     
     return predicted_label
 
-for folder_name in os.listdir(input_folder):
-    if folder_name in class_mapping:
-        class_label = class_mapping[folder_name]
-        folder_path = os.path.join(input_folder, folder_name)
-
-        for image_name in os.listdir(folder_path):
-            image_path = os.path.join(folder_path, image_name)
-            image = load_img(image_path, target_size=img_size)
-            image = img_to_array(image)
-            image /= 255.0  # Normalizando os pixels
-
-            dataset.append(image)
-            labels.append(class_label)
-            
-# Contagem das imagens para cada classe
-# class_counts = Counter(labels)
-# for class_label, count in class_counts.items():
-#     print(f"Classe '{class_label}': {count} imagens")
-
-dataset = np.array(dataset)
-label_encoder = LabelEncoder()
-labels_encoded = label_encoder.fit_transform(labels)
-labels_categorical = to_categorical(labels_encoded)
-labels_unique = np.unique(labels_encoded)
-
-# Criar um dicionário para mapear de volta os índices para rótulos de classe
-index_to_label = {i: label for i, label in enumerate(label_encoder.classes_)}
-
-
-X_train, X_val, y_train, y_val = train_test_split(dataset, labels_categorical, test_size=0.2, random_state=42)
-
-train_datagen = ImageDataGenerator(
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True
-)
-
-val_datagen = ImageDataGenerator()
-
-train_generator = train_datagen.flow(X_train, y_train, batch_size=32)
-val_generator = val_datagen.flow(X_val, y_val, batch_size=32)
-
-# Calcula os pesos das classes de forma que classes com menos amostras tenham um peso maior
-class_weights = class_weight.compute_class_weight(
-    class_weight='balanced',
-    classes=labels_unique,
-    y=labels_encoded
-)
-
-class_weights_dict = dict(enumerate(class_weights))
-print("Pesos das Classes:", class_weights_dict)
-
-checkpoint_path = os.path.join(save_directory, "model_checkpoint2.h5")
-checkpoint = ModelCheckpoint(
-    filepath=checkpoint_path,
-    monitor='val_loss',
-    verbose=1,
-    save_best_only=True,
-    mode='min',
-    save_weights_only=False
-)
-
 if os.path.exists(checkpoint_path):
     print("Modelo carregado com sucesso.")
     model = load_model(checkpoint_path)
@@ -122,7 +62,70 @@ if os.path.exists(checkpoint_path):
         print(f"Classe prevista para {nome_arquivo}: {predicted_label}")
         predicted_classes.append(predicted_label)
         
-else:  
+else: 
+
+    for folder_name in os.listdir(input_folder):
+        if folder_name in class_mapping:
+            class_label = class_mapping[folder_name]
+            folder_path = os.path.join(input_folder, folder_name)
+
+            for image_name in os.listdir(folder_path):
+                image_path = os.path.join(folder_path, image_name)
+                image = load_img(image_path, target_size=img_size)
+                image = img_to_array(image)
+                image /= 255.0  # Normalizando os pixels
+
+                dataset.append(image)
+                labels.append(class_label)
+                
+    # Contagem das imagens para cada classe
+    # class_counts = Counter(labels)
+    # for class_label, count in class_counts.items():
+    #     print(f"Classe '{class_label}': {count} imagens")
+
+    dataset = np.array(dataset)
+    label_encoder = LabelEncoder()
+    labels_encoded = label_encoder.fit_transform(labels)
+    labels_categorical = to_categorical(labels_encoded)
+    labels_unique = np.unique(labels_encoded)
+
+    # Criar um dicionário para mapear de volta os índices para rótulos de classe
+    #index_to_label = {i: label for i, label in enumerate(label_encoder.classes_)}
+
+    X_train, X_val, y_train, y_val = train_test_split(dataset, labels_categorical, test_size=0.2, random_state=42)
+
+    train_datagen = ImageDataGenerator(
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True
+    )
+
+    val_datagen = ImageDataGenerator()
+
+    train_generator = train_datagen.flow(X_train, y_train, batch_size=32)
+    val_generator = val_datagen.flow(X_val, y_val, batch_size=32)
+
+    # Calcula os pesos das classes de forma que classes com menos amostras tenham um peso maior
+    class_weights = class_weight.compute_class_weight(
+        class_weight='balanced',
+        classes=labels_unique,
+        y=labels_encoded
+    )
+
+    class_weights_dict = dict(enumerate(class_weights))
+    print("Pesos das Classes:", class_weights_dict)
+
+  
+    checkpoint = ModelCheckpoint(
+        filepath=checkpoint_path,
+        monitor='val_loss',
+        verbose=1,
+        save_best_only=True,
+        mode='min',
+        save_weights_only=False
+    )
+
+    
     print('Modelo não encontrado. Criando um novo modelo...')
     base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(100, 100, 3))
 

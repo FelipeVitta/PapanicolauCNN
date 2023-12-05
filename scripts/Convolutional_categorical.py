@@ -14,8 +14,12 @@ import os
 input_folder = './output_cell_images'
 save_directory = './models_trained/Convolutional_categorical'
 model_path = os.path.join(save_directory, 'efficientnet_model.h5')
+checkpoint_filepath = os.path.join(save_directory, 'best_model.h5')
 
 predicted_classes = []
+index_to_label = {0: 'ASC-H', 1: 'ASC-US', 2: 'HSIL', 3: 'LSIL', 4: 'Negative for intraepithelial lesion', 5: 'SCC'}
+
+img_size = (100, 100)
 
 # Função para preparar uma imagem para classificação
 def prepare_image(file_path, img_size):
@@ -35,58 +39,6 @@ def classify_image(file_path, model, img_size):
     print(predictions)
     return predicted_label
 
-labels = os.listdir(input_folder)
-
-datagen = ImageDataGenerator(
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    validation_split=0.2
-)
-
-batch_size = 32
-img_size = (100, 100)
-
-train_generator = datagen.flow_from_directory(
-    input_folder,
-    class_mode='categorical',
-    target_size=img_size,
-    batch_size=batch_size,
-    subset='training',
-    classes=labels
-)
-
-# Obter o mapeamento de class_indices do gerador
-class_indices = train_generator.class_indices
-# Criar um mapeamento reverso
-index_to_label = {v: k for k, v in class_indices.items()}
-
-val_generator = datagen.flow_from_directory(
-    input_folder,
-    class_mode='categorical',
-    target_size=img_size,
-    batch_size=batch_size,
-    subset='validation',
-    classes=labels
-)
-
-class_weights = class_weight.compute_class_weight(
-    class_weight='balanced',
-    classes=np.unique(labels),
-    y=labels
-)
-class_weights_dict = dict(enumerate(class_weights))
-
-checkpoint_filepath = os.path.join(save_directory, 'best_model.h5')
-
-model_checkpoint = ModelCheckpoint(
-    filepath=checkpoint_filepath,
-    monitor='val_loss',
-    save_best_only=True,
-    mode='min',
-    verbose=1
-)
-
 # Carregar modelo se existir, caso contrário, criar um novo
 if os.path.exists(checkpoint_filepath):
     print("Modelo carregado com sucesso.")
@@ -99,11 +51,54 @@ if os.path.exists(checkpoint_filepath):
         # Classificar a imagem
         predicted_label = classify_image(img_path, model, img_size)
         print(f"Classe prevista para {nome_arquivo}: {predicted_label}")
-        predicted_classes.append(predicted_label)
-        
-    #print(predicted_classes)
+        predicted_classes.append(predicted_label)      
 else:
+    
     print("Modelo não encontrado. Criando um novo modelo.")
+    labels = os.listdir(input_folder)
+
+    datagen = ImageDataGenerator(
+        shear_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        validation_split=0.2
+    )
+
+    batch_size = 32
+
+    train_generator = datagen.flow_from_directory(
+        input_folder,
+        class_mode='categorical',
+        target_size=img_size,
+        batch_size=batch_size,
+        subset='training',
+        classes=labels
+    )
+
+    val_generator = datagen.flow_from_directory(
+        input_folder,
+        class_mode='categorical',
+        target_size=img_size,
+        batch_size=batch_size,
+        subset='validation',
+        classes=labels
+    )
+
+    class_weights = class_weight.compute_class_weight(
+        class_weight='balanced',
+        classes=np.unique(labels),
+        y=labels
+    )
+    class_weights_dict = dict(enumerate(class_weights))
+
+    model_checkpoint = ModelCheckpoint(
+        filepath=checkpoint_filepath,
+        monitor='val_loss',
+        save_best_only=True,
+        mode='min',
+        verbose=1
+    )
+
     base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(100, 100, 3))
 
     model = models.Sequential()
