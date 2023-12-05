@@ -99,7 +99,7 @@ class_weights = class_weight.compute_class_weight(
 class_weights_dict = dict(enumerate(class_weights))
 print("Pesos das Classes:", class_weights_dict)
 
-checkpoint_path = os.path.join(save_directory, "model_checkpoint.h5")
+checkpoint_path = os.path.join(save_directory, "model_checkpoint2.h5")
 checkpoint = ModelCheckpoint(
     filepath=checkpoint_path,
     monitor='val_loss',
@@ -133,7 +133,7 @@ else:
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(len(np.unique(labels_encoded)), activation='softmax'))
 
-    model.compile(optimizer=optimizers.Adam(learning_rate=0.01), 
+    model.compile(optimizer=optimizers.Adam(learning_rate=0.001), 
                   loss='categorical_crossentropy', 
                   metrics=['accuracy'])
 
