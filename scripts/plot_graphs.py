@@ -33,6 +33,10 @@ def plot_graph_mahalanobis_binary_confusion(predicted_classes, true_classes):
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
     plt.xlabel('Classe Prevista')
     plt.ylabel('Classe Verdadeira')
+
+    plt.xticks(ticks=[0.5, 1.5], labels=["Negativo", "Positivo"])
+    plt.yticks(ticks=[0.5, 1.5], labels=["Negativo", "Positivo"])
+
     plt.title('Matriz de Confusão')
     plt.show()
     
@@ -64,7 +68,7 @@ def plot_graph_mahalanobis_confusion(predicted_classes, true_classes):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
-    plt.xlabel('Classe Verdadeira')
-    plt.ylabel('Classe Prevista')
+    plt.xlabel('Classe Prevista')
+    plt.ylabel('Classe Verdadeira')
     plt.title('Matriz de Confusão')
     plt.show()

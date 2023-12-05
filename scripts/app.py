@@ -1,7 +1,8 @@
 import customtkinter as ctk
 from customtkinter import filedialog
-from PIL import Image, ImageTk
+from PIL import Image
 import Mahalanobis_binary
+import Mahalanobis_categorical
 import re
 import plot_graphs
 import nucleus_detection
@@ -340,8 +341,8 @@ def upload_image():
         mahalanobis_binary_response = Mahalanobis_binary.classify_mahalanobis_binary(mahalanobis_binary_nucleus_info)
         display_mahalanobis_binary_results(mahalanobis_binary_response, scrollable_frame.display_results_frame)
 
-        # mahalanobis_response = Mahalanobis_categorical.classify_mahalanobis(mahalanobis_nucleus_info)
-        # display_mahalanobis_results(mahalanobis_response, scrollable_frame.display_results_frame)
+        mahalanobis_response = Mahalanobis_categorical.classify_mahalanobis(mahalanobis_nucleus_info)
+        display_mahalanobis_results(mahalanobis_response, scrollable_frame.display_results_frame)
 
         display_nucleus(mahalanobis_nucleus_info)
 
