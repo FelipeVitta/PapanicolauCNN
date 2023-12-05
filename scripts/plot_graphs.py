@@ -3,12 +3,13 @@ from sklearn.metrics import confusion_matrix
 import seaborn as sns
 
 cores = {'Negative for intraepithelial lesion': 'black', 'Positive for intraepithelial lesion': 'blue'}
-classes = [] # Lista para armazenar as classes   
-areas = []
-compacidades = []
 
 # Mahalanobis binário - plotar o gráfico de dispersão
 def plot_graph_mahalanobis_binary(characteristics_and_classes):
+    classes = []
+    areas = []
+    compacidades = []
+
     for carac, classe in characteristics_and_classes:
         classes.append('Positive for intraepithelial lesion' if classe != 'Negative for intraepithelial lesion' else classe)   
         areas.append(carac[0])
@@ -30,8 +31,8 @@ def plot_graph_mahalanobis_binary_confusion(predicted_classes, true_classes):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
-    plt.xlabel('Classe Verdadeira')
-    plt.ylabel('Classe Prevista')
+    plt.xlabel('Classe Prevista')
+    plt.ylabel('Classe Verdadeira')
     plt.title('Matriz de Confusão')
     plt.show()
     
@@ -39,6 +40,9 @@ cores2 = {'Negative for intraepithelial lesion': 'black', 'ASC-H': 'blue', 'ASC-
    
 # Mahalanobis - plotar o gráfico de dispersão
 def plot_graph_mahalanobis(characteristics_and_classes):
+    classes = []
+    areas = []
+    compacidades = []
     for carac, classe in characteristics_and_classes:
         classes.append(classe) 
         areas.append(carac[0])
@@ -60,7 +64,7 @@ def plot_graph_mahalanobis_confusion(predicted_classes, true_classes):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
-    plt.xlabel('Classe Prevista')
-    plt.ylabel('Classe Verdadeira')
+    plt.xlabel('Classe Verdadeira')
+    plt.ylabel('Classe Prevista')
     plt.title('Matriz de Confusão')
     plt.show()
