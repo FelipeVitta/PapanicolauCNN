@@ -39,7 +39,7 @@ def calculate_mahalanobis(class_means_dict, class_covariance_dict):
 
         characteristics_and_predicted_classes.append([characteristics[0], characteristics[1], characteristics[2], predicted_class]) 
     
-def classify_mahalanobis_binary(image_cell_path, nucleus_info):  
+def classify_mahalanobis_binary(nucleus_info):  
     covariance_path = os.path.join(save_directory, 'class_covariance.joblib')
     means_path = os.path.join(save_directory, 'class_means.joblib')
 

@@ -20,7 +20,6 @@ characteristics_and_predicted_classes = []
 characteristics_and_classes = []
 predicted_classes = []  # Lista para armazenar as classes previstas
 accuracy = ""
-#acuracias = []
 
 # Calcular a distância de Mahalanobis
 def calculate_mahalanobis(class_means_dict, class_covariance_dict):
@@ -40,7 +39,7 @@ def calculate_mahalanobis(class_means_dict, class_covariance_dict):
         
         characteristics_and_predicted_classes.append([characteristics[0], characteristics[1], characteristics[2], predicted_class]) 
     
-def classify_mahalanobis(image_cell_path, nucleus_info):  
+def classify_mahalanobis(nucleus_info):  
     covariance_path = os.path.join(save_directory, 'class_covariance.joblib')
     means_path = os.path.join(save_directory, 'class_means.joblib')
 
