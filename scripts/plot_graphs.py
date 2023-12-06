@@ -27,7 +27,7 @@ def plot_graph_mahalanobis_binary(characteristics_and_classes):
     plt.show()
     
 # Mahalanobis binário - plotar matriz de confusão
-def plot_graph_mahalanobis_binary_confusion(predicted_classes, true_classes):
+def plot_graph_binary_confusion(predicted_classes, true_classes):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')
@@ -63,8 +63,10 @@ def plot_graph_mahalanobis(characteristics_and_classes):
     plt.title('Gráfico de Dispersão por Classe')
     plt.show()
     
+
  # Mahalanobis - plotar matriz de confusão   
-def plot_graph_mahalanobis_confusion(predicted_classes, true_classes):
+
+def plot_graph_confusion(predicted_classes, true_classes):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))
     sns.heatmap(confusion_mat, annot=True, fmt='d', cmap='Blues')

@@ -108,17 +108,10 @@ def classify_mahalanobis_binary(nucleus_info):
         
         print('Treinamento finalizado!!')
 
-    true_classes = [classe for _, classe in characteristics_and_classes]
-    data = dict();
+    data = dict()
     data['characteristics_and_classes'] = characteristics_and_classes
-    data['characteristics_and_predicted_classes'] = characteristics_and_predicted_classes
     data['predicted_classes'] = predicted_classes
-    data['true_classes'] = true_classes
-    data['accuracy'] = accuracy_score(true_classes, predicted_classes)
     
     print('\t FIM Mahalanobis Binário')
 
     return data
-
-    
-

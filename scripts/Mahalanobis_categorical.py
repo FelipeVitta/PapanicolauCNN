@@ -110,9 +110,6 @@ def classify_mahalanobis(nucleus_info):
     data = dict();
     data['characteristics_and_classes'] = characteristics_and_classes
     data['predicted_classes'] = predicted_classes
-    data['characteristics_and_predicted_classes'] = characteristics_and_predicted_classes
-    data['true_classes'] = true_classes
-    data['accuracy'] = accuracy_score(true_classes, predicted_classes)
     
     print('\t FIM Mahalanobis Categórico')
 
