@@ -6,6 +6,9 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras import models, layers, optimizers
 from tensorflow.keras import regularizers
 from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.utils import to_categorical
+from sklearn.preprocessing import LabelEncoder
+
 
 import numpy as np
 from sklearn.utils import class_weight
@@ -56,6 +59,10 @@ else:
     
     print("Modelo não encontrado. Criando um novo modelo.")
     labels = os.listdir(input_folder)
+    label_encoder = LabelEncoder()
+    labels_encoded = label_encoder.fit_transform(labels)
+    labels_categorical = to_categorical(labels_encoded)
+    labels_unique = np.unique(labels_encoded)
 
     datagen = ImageDataGenerator(
         shear_range=0.2,
@@ -90,6 +97,7 @@ else:
         y=labels
     )
     class_weights_dict = dict(enumerate(class_weights))
+    
 
     model_checkpoint = ModelCheckpoint(
         filepath=checkpoint_filepath,
