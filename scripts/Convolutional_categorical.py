@@ -17,7 +17,7 @@ import os
 input_folder = './output_cell_images'
 save_directory = './models_trained/Convolutional_categorical'
 model_path = os.path.join(save_directory, 'efficientnet_model.h5')
-checkpoint_filepath = os.path.join(save_directory, 'best_model.h5')
+checkpoint_filepath = os.path.join(save_directory, 'best_model2.h5')
 
 predicted_classes = []
 index_to_label = {0: 'ASC-H', 1: 'ASC-US', 2: 'HSIL', 3: 'LSIL', 4: 'Negative for intraepithelial lesion', 5: 'SCC'}
@@ -59,6 +59,7 @@ else:
     
     print("Modelo não encontrado. Criando um novo modelo.")
     labels = os.listdir(input_folder)
+    print(labels)
     label_encoder = LabelEncoder()
     labels_encoded = label_encoder.fit_transform(labels)
     labels_categorical = to_categorical(labels_encoded)
@@ -91,12 +92,19 @@ else:
         classes=labels
     )
 
+    y_train = train_generator.classes
+
+    print(y_train)
+
+
     class_weights = class_weight.compute_class_weight(
         class_weight='balanced',
-        classes=np.unique(labels),
-        y=labels
+        classes=np.unique(train_generator.classes),
+        y=y_train
     )
     class_weights_dict = dict(enumerate(class_weights))
+    print('ALERTA INSANIDADE :')
+    print(class_weights_dict)
     
 
     model_checkpoint = ModelCheckpoint(
