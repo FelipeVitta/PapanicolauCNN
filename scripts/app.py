@@ -153,9 +153,9 @@ def render_table(
         frame, title, table_headers, 
         table_data, accuracy, 
         confusion_graph_btn_function, 
-        row = 0, column = 0, 
-        negative_display_text = "Negativo",
-        positive_display_text = "Positivo"):
+        negative_display_text,
+        positive_display_text,
+        row = 0, column = 0):
     frame.results_frame = ctk.CTkFrame(frame, fg_color="transparent")
     frame.results_frame.grid(row=row, column=column, padx=10, pady=10)
 
@@ -209,12 +209,18 @@ def render_table(
     confusion_graph_btn.grid(row=2, column=0, pady=10, padx=10)
 
 def display_results(frame, predicted_classes, true_classes, title, headers, column=0, binary=False):
-    true_classes = true_binary_classes
     accuracy = accuracy_score(true_classes, predicted_classes)
 
     show_confusion_graph = lambda: plot_graphs.plot_confusion_graph(predicted_classes, true_classes, binary)
 
     data = []
+
+    if binary:
+        negative_display_text="Negativo"
+        positive_display_text="Positivo"
+    else:
+        negative_display_text="Negativo p/ LI"
+        positive_display_text="Positivo p/ LI"
 
     nucleus_number = 1
     for predicted_class in predicted_classes:
@@ -229,7 +235,10 @@ def display_results(frame, predicted_classes, true_classes, title, headers, colu
         table_headers=headers, 
         table_data=data, 
         accuracy=accuracy, 
-        confusion_graph_btn_function=show_confusion_graph)
+        confusion_graph_btn_function=show_confusion_graph,
+        negative_display_text=negative_display_text,
+        positive_display_text=positive_display_text)
+    
     
 def zoom_in(image):
     new_size = (int(image._size[0] * 1.2), int(image._size[1] * 1.2))
