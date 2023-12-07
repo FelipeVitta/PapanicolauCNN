@@ -11,7 +11,6 @@ from sklearn.preprocessing import LabelEncoder
 
 
 import numpy as np
-from sklearn.utils import class_weight
 import os
 
 input_folder = './output_cell_images'
@@ -95,16 +94,6 @@ else:
     y_train = train_generator.classes
 
     print(y_train)
-
-
-    class_weights = class_weight.compute_class_weight(
-        class_weight='balanced',
-        classes=np.unique(train_generator.classes),
-        y=y_train
-    )
-    class_weights_dict = dict(enumerate(class_weights))
-    print('ALERTA INSANIDADE :')
-    print(class_weights_dict)
     
 
     model_checkpoint = ModelCheckpoint(
@@ -129,12 +118,11 @@ else:
     model.compile(optimizer=optimizers.Adam(learning_rate=1e-4), loss='categorical_crossentropy', metrics=['accuracy'])
 
     # Treina o modelo
-    epochs = 20
+    epochs = 150
     history = model.fit(
         train_generator,
         epochs=epochs,
         validation_data=val_generator,
-        class_weight=class_weights_dict,
         callbacks=[model_checkpoint]
     )
 
