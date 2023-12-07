@@ -106,11 +106,6 @@ def classify_mahalanobis(nucleus_info):
         
         print('Treinamento finalizado!!')
 
-    true_classes = [classe for _, classe in characteristics_and_classes]
-    data = dict();
-    data['characteristics_and_classes'] = characteristics_and_classes
-    data['predicted_classes'] = predicted_classes
-    
     print('\t FIM Mahalanobis Categórico')
 
-    return data
+    return predicted_classes

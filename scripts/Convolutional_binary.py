@@ -157,6 +157,4 @@ def classify_convolutional_binary():
 
     print('\t FIM Convolucional Binário')
 
-    data = dict()
-    data["predicted_classes"] = predicted_classes
-    return data
+    return predicted_classes
