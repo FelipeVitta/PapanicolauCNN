@@ -45,13 +45,14 @@ def classify_image(file_path, model, img_size):
     predictions = model.predict(img_ready)
     predicted_class = np.argmax(predictions, axis=1)
     predicted_label = index_to_label[predicted_class[0]]
-    print(predictions)
     return predicted_label
 
 def classify_convolutional():
+    global predicted_classes
+    predicted_classes = []
     # Carregar modelo se existir, caso contrário, criar um novo
     if os.path.exists(checkpoint_filepath):
-        print("Modelo carregado com sucesso.")
+        print('Executando Convolucional Categórico...')
         model = load_model(checkpoint_filepath)
         diretorio_imagens = './image_nucleus'
         # Percorrer todas as imagens no diretório
@@ -60,17 +61,10 @@ def classify_convolutional():
             img_path = os.path.join(diretorio_imagens, nome_arquivo)
             # Classificar a imagem
             predicted_label = classify_image(img_path, model, img_size)
-            print(f"Classe prevista para {nome_arquivo}: {predicted_label}")
             predicted_classes.append(predicted_label)      
     else:
-    
         print("Modelo não encontrado. Criando um novo modelo.")
         labels = os.listdir(input_folder)
-        print(labels)
-        label_encoder = LabelEncoder()
-        labels_encoded = label_encoder.fit_transform(labels)
-        labels_categorical = to_categorical(labels_encoded)
-        labels_unique = np.unique(labels_encoded)
 
         datagen = ImageDataGenerator(
             shear_range=0.2,
@@ -111,9 +105,6 @@ def classify_convolutional():
             y=y_train
         )
         class_weights_dict = dict(enumerate(class_weights))
-        print('ALERTA INSANIDADE :')
-        print(class_weights_dict)
-        
 
         model_checkpoint = ModelCheckpoint(
             filepath=checkpoint_filepath,
@@ -140,5 +131,7 @@ def classify_convolutional():
         model.fit(train_generator, epochs=epochs, callbacks=[model_checkpoint], validation_data=val_generator, class_weight=class_weights_dict)
 
         model.save(model_path)      
+
+    print('\t FIM Convolucional Categórico')
 
     return predicted_classes

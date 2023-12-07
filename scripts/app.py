@@ -4,6 +4,7 @@ from PIL import Image
 import Mahalanobis_binary
 import Mahalanobis_categorical
 import Convolutional_binary
+import Convolutional_categorical
 import re
 import plot_graphs
 import nucleus_detection
@@ -329,7 +330,7 @@ def upload_image():
             text_color=button_txt_color,
             corner_radius=80,
             width=80)
-        dispersion_graph_categorical_btn.grid(row=0, column=0, pady=10, padx=10)
+        dispersion_graph_categorical_btn.grid(row=0, column=1, pady=10, padx=10)
 
         dispersion_graph_binary = lambda: plot_graphs.plot_dispersion_graph(mahalanobis_binary_nucleus_info, binary=True)
         dispersion_graph_binary_btn = ctk.CTkButton(
@@ -342,7 +343,7 @@ def upload_image():
             text_color=button_txt_color,
             corner_radius=80,
             width=80)
-        dispersion_graph_binary_btn.grid(row=0, column=1, pady=10, padx=10)
+        dispersion_graph_binary_btn.grid(row=0, column=0, pady=10, padx=10)
 
         # exibir tabelas
         binary_headers = ["Núcleo", "Resultado para \n lesão intraepitelial"]
@@ -379,12 +380,11 @@ def upload_image():
             true_classes=true_binary_classes,
             binary=True)
 
-        # convolutional_response = Convolutional_categorical.classify_convolutional()
-        # TODO: TROCAR PARAMETRO convolutional_binary_response PARA convolutional_response DEPOIS
+        convolutional_response = Convolutional_categorical.classify_convolutional()
         display_results(
             frame=scrollable_frame.display_results_frame,
             column=3,
-            predicted_classes=convolutional_binary_response, 
+            predicted_classes=convolutional_response, 
             title="Convolucional Categórico",
             headers=categorical_headers,
             true_classes=true_categorical_classes)
