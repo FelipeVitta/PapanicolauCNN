@@ -84,6 +84,7 @@ def classify_mahalanobis_binary(nucleus_info):
         class_covariance_dict = {}
         class_means_dict = {} 
             
+        # inicializa os dicts para cada classe e adiciona as caracteriscas
         for characteristics, classe in characteristics_and_classes:
             if classe not in class_covariance_dict:
                 class_covariance_dict[classe] = []
@@ -92,7 +93,7 @@ def classify_mahalanobis_binary(nucleus_info):
             class_covariance_dict[classe].append(characteristics)
             class_means_dict[classe].append(characteristics)
         
-        # Calculando as médias e matrizes de covariância
+        # cálculo das médias e covariância
         for classe in class_covariance_dict:
             observations = np.array(class_covariance_dict[classe])
             class_covariance_dict[classe] = np.cov(observations, rowvar=False)
@@ -108,10 +109,7 @@ def classify_mahalanobis_binary(nucleus_info):
         
         print('Treinamento finalizado!!')
 
-    data = dict()
-    data['characteristics_and_classes'] = characteristics_and_classes
-    data['predicted_classes'] = predicted_classes
     
     print('\t FIM Mahalanobis Binário')
 
-    return data
+    return predicted_classes

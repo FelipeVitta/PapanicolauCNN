@@ -63,7 +63,6 @@ def classify_convolutional_binary():
             img_path = os.path.join(diretorio_imagens, nome_arquivo)
             # Classificar a imagem
             predicted_label = classify_image(img_path, model, img_size)
-            # print(f"Classe prevista para {nome_arquivo}: {predicted_label}")
             predicted_classes.append(predicted_label)
             
     else: 
@@ -81,19 +80,11 @@ def classify_convolutional_binary():
                     dataset.append(image)
                     labels.append(class_label)
                     
-        # Contagem das imagens para cada classe
-        # class_counts = Counter(labels)
-        # for class_label, count in class_counts.items():
-        #     print(f"Classe '{class_label}': {count} imagens")
-
         dataset = np.array(dataset)
         label_encoder = LabelEncoder()
         labels_encoded = label_encoder.fit_transform(labels)
         labels_categorical = to_categorical(labels_encoded)
         labels_unique = np.unique(labels_encoded)
-
-        # Criar um dicionário para mapear de volta os índices para rótulos de classe
-        #index_to_label = {i: label for i, label in enumerate(label_encoder.classes_)}
 
         X_train, X_val, y_train, y_val = train_test_split(dataset, labels_categorical, test_size=0.2, random_state=42)
 
@@ -128,7 +119,6 @@ def classify_convolutional_binary():
             save_weights_only=False
         )
 
-        
         print('Modelo não encontrado. Criando um novo modelo...')
         base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(100, 100, 3))
 
@@ -157,6 +147,4 @@ def classify_convolutional_binary():
 
     print('\t FIM Convolucional Binário')
 
-    data = dict()
-    data["predicted_classes"] = predicted_classes
-    return data
+    return predicted_classes

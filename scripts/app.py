@@ -4,6 +4,7 @@ from PIL import Image
 import Mahalanobis_binary
 import Mahalanobis_categorical
 import Convolutional_binary
+import Convolutional_categorical
 import re
 import plot_graphs
 import nucleus_detection
@@ -148,15 +149,13 @@ def display_nucleus(nucleus_infos):
         column_index += 1
         file_index += 1
 
-def display_results(
+def render_table(
         frame, title, table_headers, 
         table_data, accuracy, 
         confusion_graph_btn_function, 
-        graph_btn_function = lambda: None,
-        show_graph = True,
-        row = 0, column = 0, 
-        negative_display_text = "Negativo",
-        positive_display_text = "Positivo"):
+        negative_display_text,
+        positive_display_text,
+        row = 0, column = 0):
     frame.results_frame = ctk.CTkFrame(frame, fg_color="transparent")
     frame.results_frame.grid(row=row, column=column, padx=10, pady=10)
 
@@ -164,14 +163,14 @@ def display_results(
     results_frame_title.grid(row=0, column=0, pady=10, columnspan=2)
 
     frame.results_frame.buttons = ctk.CTkFrame(frame.results_frame)
-    frame.results_frame.buttons.grid(row=1, column=0, pady=10, padx=10)
+    frame.results_frame.buttons.grid(row=1, column=0, pady=(0, 10), padx=10)
 
     frame.results_frame.table = ctk.CTkFrame(frame.results_frame, fg_color=table_bg_color)
     frame.results_frame.table.grid(row=2, column=0, padx=10)
 
     column_count = 0
     for header in table_headers:
-        header_label = ctk.CTkLabel(frame.results_frame.table, text=header, font=normal_font_bold)
+        header_label = ctk.CTkLabel(frame.results_frame.table, text=header, font=normal_font_bold, height=30)
         header_label.grid(row=0, column=column_count, padx=10, pady=10)
 
         row_count = 1
@@ -194,8 +193,8 @@ def display_results(
         column_count += 1
 
     string = 'Acurácia: ' + "{:.2f}".format(accuracy * 100) + "%"
-    accuracy_label = ctk.CTkLabel(frame.results_frame.buttons, text=string, font=normal_font_bold)
-    accuracy_label.grid(row=1, column=0, columnspan=2)
+    accuracy_label = ctk.CTkLabel(frame.results_frame.buttons, text=string, font=normal_font_small)
+    accuracy_label.grid(row=1, column=0)
 
     confusion_graph_btn = ctk.CTkButton(
         frame.results_frame.buttons, 
@@ -209,31 +208,19 @@ def display_results(
         width=80)
     confusion_graph_btn.grid(row=2, column=0, pady=10, padx=10)
 
-    if(show_graph):
-        graph_btn = ctk.CTkButton(
-            frame.results_frame.buttons, 
-            text='Gráfico de\nDispersão', 
-            command=graph_btn_function,
-            fg_color=button_color,
-            hover_color=button_hover_color,
-            font=normal_font_small,
-            text_color=button_txt_color,
-            corner_radius=80,
-            width=80)
-        graph_btn.grid(row=2, column=1, pady=10, padx=10)
-
-def display_mahalanobis_binary_results(ai_response, frame):
-    characteristics_and_classes = ai_response['characteristics_and_classes']
-    predicted_classes = ai_response['predicted_classes']
-
-    true_classes = true_binary_classes
+def display_results(frame, predicted_classes, true_classes, title, headers, column=0, binary=False):
     accuracy = accuracy_score(true_classes, predicted_classes)
 
-    show_graph = lambda: plot_graphs.plot_graph_mahalanobis_binary(characteristics_and_classes)
-    show_confusion_graph = lambda: plot_graphs.plot_graph_binary_confusion(predicted_classes, true_classes)
+    show_confusion_graph = lambda: plot_graphs.plot_confusion_graph(predicted_classes, true_classes, binary)
 
-    headers = ["Núcleo", "Resultado para \n lesão intraepitelial"]
     data = []
+
+    if binary:
+        negative_display_text="Negativo"
+        positive_display_text="Positivo"
+    else:
+        negative_display_text="Negativo p/ LI"
+        positive_display_text="Positivo p/ LI"
 
     nucleus_number = 1
     for predicted_class in predicted_classes:
@@ -241,103 +228,18 @@ def display_mahalanobis_binary_results(ai_response, frame):
         data.append(table_row)
         nucleus_number += 1
 
-    display_results(
+    render_table(
         frame=frame,
-        column=0,
-        title="Mahalanobis Binária", 
-        table_headers=headers, 
-        table_data=data, 
-        accuracy=accuracy, 
-        graph_btn_function=show_graph, 
-        confusion_graph_btn_function=show_confusion_graph)
-    
-def display_mahalanobis_results(ai_response, frame):
-    characteristics_and_classes = ai_response['characteristics_and_classes']
-    predicted_classes = ai_response['predicted_classes']
-
-    true_classes = true_categorical_classes
-    accuracy = accuracy_score(true_classes, predicted_classes)
-    
-    show_graph = lambda: plot_graphs.plot_graph_mahalanobis(characteristics_and_classes)
-    show_confusion_graph = lambda: plot_graphs.plot_graph_confusion(predicted_classes, true_classes)
-
-    headers = ["Núcleo", "Classe Predita"]
-    data = []
-
-    nucleus_number = 1
-    for predicted_class in predicted_classes:
-        table_row = [nucleus_number, predicted_class]
-        data.append(table_row)
-        nucleus_number += 1
-
-    display_results(
-        frame=frame,
-        column=2,
-        title="Mahalanobis", 
-        table_headers=headers, 
-        table_data=data, 
-        accuracy=accuracy, 
-        graph_btn_function=show_graph, 
-        confusion_graph_btn_function=show_confusion_graph,
-        negative_display_text="Negativo p/ LI",
-        positive_display_text="Positivo p/ LI")
-   
-def display_convolutional_binary_results(ai_response, frame):
-    predicted_classes = ai_response['predicted_classes']
-
-    true_classes = true_binary_classes
-    accuracy = accuracy_score(true_classes, predicted_classes)
-    
-    show_confusion_graph = lambda: plot_graphs.plot_graph_confusion(predicted_classes, true_classes)
-
-    headers = ["Núcleo", "Resultado para \n lesão intraepitelial"]
-    data = []
-
-    nucleus_number = 1
-    for predicted_class in predicted_classes:
-        table_row = [nucleus_number, predicted_class]
-        data.append(table_row)
-        nucleus_number += 1
-
-    display_results(
-        frame=frame,
-        column=1,
-        title="Convolutional Binary", 
+        column=column,
+        title=title, 
         table_headers=headers, 
         table_data=data, 
         accuracy=accuracy, 
         confusion_graph_btn_function=show_confusion_graph,
-        show_graph=False)
+        negative_display_text=negative_display_text,
+        positive_display_text=positive_display_text)
     
-def display_convolutional_results(ai_response, frame):
-    predicted_classes = ai_response['predicted_classes']
-
-    true_classes = true_categorical_classes
-    accuracy = accuracy_score(true_classes, predicted_classes)
     
-    show_confusion_graph = lambda: plot_graphs.plot_graph_confusion(predicted_classes, true_classes)
-
-    headers = ["Núcleo", "Classe Predita"]
-    data = []
-
-    nucleus_number = 1
-    for predicted_class in predicted_classes:
-        table_row = [nucleus_number, predicted_class]
-        data.append(table_row)
-        nucleus_number += 1
-
-    display_results(
-        frame=frame,
-        column=3,
-        title="Convolutional", 
-        table_headers=headers, 
-        table_data=data, 
-        accuracy=accuracy, 
-        confusion_graph_btn_function=show_confusion_graph,
-        show_graph=False,
-        negative_display_text="Negativo p/ LI",
-        positive_display_text="Positivo p/ LI")
-
 def zoom_in(image):
     new_size = (int(image._size[0] * 1.2), int(image._size[1] * 1.2))
     global zoom_count
@@ -400,9 +302,6 @@ def upload_image():
         label_image = ctk.CTkLabel(scrollable_frame, text='', image=photo)
         label_image.grid(row=2, column=0, pady=(20))  
 
-        scrollable_frame.display_results_frame = ctk.CTkFrame(scrollable_frame)
-        scrollable_frame.display_results_frame.grid(row=4, column=0, padx=10, pady=10)
-
         mahalanobis_binary_nucleus_info = []
         mahalanobis_nucleus_info = []
 
@@ -426,19 +325,78 @@ def upload_image():
 
             mahalanobis_binary_nucleus_info.append(([area, excentricidade, compacidade], classe)) 
 
+        scrollable_frame.dispersion_buttons_frame = ctk.CTkFrame(scrollable_frame)
+        scrollable_frame.dispersion_buttons_frame.grid(row=4, column=0, pady=(10, 0))
+
+        dispersion_graph_categorical = lambda: plot_graphs.plot_dispersion_graph(mahalanobis_nucleus_info)
+        dispersion_graph_categorical_btn = ctk.CTkButton(
+            scrollable_frame.dispersion_buttons_frame, 
+            text='Gráfico de Dispersão\nCategórico', 
+            command=dispersion_graph_categorical,
+            fg_color=button_color,
+            hover_color=button_hover_color,
+            font=normal_font_small,
+            text_color=button_txt_color,
+            corner_radius=80,
+            width=80)
+        dispersion_graph_categorical_btn.grid(row=0, column=1, pady=10, padx=10)
+
+        dispersion_graph_binary = lambda: plot_graphs.plot_dispersion_graph(mahalanobis_binary_nucleus_info, binary=True)
+        dispersion_graph_binary_btn = ctk.CTkButton(
+            scrollable_frame.dispersion_buttons_frame, 
+            text='Gráfico de Dispersão\nBinário', 
+            command=dispersion_graph_binary,
+            fg_color=button_color,
+            hover_color=button_hover_color,
+            font=normal_font_small,
+            text_color=button_txt_color,
+            corner_radius=80,
+            width=80)
+        dispersion_graph_binary_btn.grid(row=0, column=0, pady=10, padx=10)
+
         # exibir tabelas
+        binary_headers = ["Núcleo", "Resultado para \n lesão intraepitelial"]
+        categorical_headers = ["Núcleo", "Classe Predita"]
+
+        scrollable_frame.display_results_frame = ctk.CTkFrame(scrollable_frame)
+        scrollable_frame.display_results_frame.grid(row=5, column=0, padx=10, pady=10)
+
         mahalanobis_binary_response = Mahalanobis_binary.classify_mahalanobis_binary(mahalanobis_binary_nucleus_info)
-        display_mahalanobis_binary_results(mahalanobis_binary_response, scrollable_frame.display_results_frame)
+        display_results(
+            frame=scrollable_frame.display_results_frame,
+            predicted_classes=mahalanobis_binary_response, 
+            title="Mahalanobis Binário",
+            headers=binary_headers,
+            true_classes=true_binary_classes,
+            binary=True)
 
         mahalanobis_response = Mahalanobis_categorical.classify_mahalanobis(mahalanobis_nucleus_info)
-        display_mahalanobis_results(mahalanobis_response, scrollable_frame.display_results_frame)
+        display_results(
+            frame=scrollable_frame.display_results_frame,
+            column=1,
+            predicted_classes=mahalanobis_response, 
+            title="Mahalanobis Categórico",
+            headers=categorical_headers,
+            true_classes=true_categorical_classes)
 
         convolutional_binary_response = Convolutional_binary.classify_convolutional_binary()
-        display_convolutional_binary_results(convolutional_binary_response, scrollable_frame.display_results_frame)
+        display_results(
+            frame=scrollable_frame.display_results_frame,
+            column=2,
+            predicted_classes=convolutional_binary_response, 
+            title="Convolucional Binário",
+            headers=binary_headers,
+            true_classes=true_binary_classes,
+            binary=True)
 
-        # convolutional_response = Convolutional_categorical.classify_convolutional()
-        # TODO: TROCAR PARAMETRO convolutional_binary_response PARA convolutional_response DEPOIS
-        display_convolutional_results(convolutional_binary_response, scrollable_frame.display_results_frame)
+        convolutional_response = Convolutional_categorical.classify_convolutional()
+        display_results(
+            frame=scrollable_frame.display_results_frame,
+            column=3,
+            predicted_classes=convolutional_response, 
+            title="Convolucional Categórico",
+            headers=categorical_headers,
+            true_classes=true_categorical_classes)
 
         display_nucleus(mahalanobis_nucleus_info)
 
