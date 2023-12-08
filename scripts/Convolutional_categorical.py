@@ -62,6 +62,7 @@ def classify_convolutional():
             predicted_label = classify_image(img_path, model, img_size)
             predicted_classes.append(predicted_label)      
     else:
+        
         print("Modelo não encontrado. Criando um novo modelo.")
         labels = os.listdir(input_folder)
 
@@ -111,12 +112,23 @@ def classify_convolutional():
         # for camada in base_model.layers:
         #     camada.trainable = False
 
-        layer = base_model.output
-        layer = GlobalAveragePooling2D()(layer)
-        layer = Dense(256, activation='relu')(layer)
-        prediction = Dense(6, activation='softmax')(layer)
+        model = models.Sequential()
+        model.add(base_model)
+        model.add(layers.GlobalAveragePooling2D())
+        model.add(layers.Dense(64, activation='relu'))
+        model.add(layers.Dropout(0.3))
+        model.add(layers.Dense(len(labels), activation='softmax'))
 
-        model = Model(inputs=base_model.input, outputs=prediction)
+        model.compile(optimizer=optimizers.Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+   
+        # Cálculo dos pesos das classes
+        class_weights = compute_class_weight(
+            class_weight='balanced',
+            classes=np.unique(train_generator.classes),
+            y=train_generator.classes)
+
+        # Convertendo os pesos para um dicionário para passar durante o treinamento
+        class_weights_dict = dict(enumerate(class_weights))
 
         # Treina o modelo
         epochs = 150
@@ -127,7 +139,7 @@ def classify_convolutional():
             callbacks=[model_checkpoint]
         )
 
-        model.fit(train_generator, epochs=epochs, callbacks=[model_checkpoint], validation_data=val_generator, class_weight=class_weights_dict)
+        model.fit(train_generator, epochs=epochs, callbacks=[model_checkpoint], validation_data=val_generator)
 
         model.save(model_path)      
 
