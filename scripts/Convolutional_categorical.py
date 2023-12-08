@@ -27,7 +27,7 @@ checkpoint_filepath = os.path.join(save_directory, 'best_model2.h5')
 predicted_classes = []
 index_to_label = {0: 'ASC-H', 1: 'ASC-US', 2: 'HSIL', 3: 'LSIL', 4: 'Negative for intraepithelial lesion', 5: 'SCC'}
 
-img_size = (224, 224)
+img_size = (100, 100)
 
 # Função para preparar uma imagem para classificação
 def prepare_image(file_path, img_size):
@@ -95,18 +95,18 @@ def classify_convolutional():
 
         y_train = train_generator.classes
 
-    print(y_train)
-    
+        print(y_train)
+        
 
-    model_checkpoint = ModelCheckpoint(
-        filepath=checkpoint_filepath,
-        monitor='val_loss',
-        save_best_only=True,
-        mode='min',
-        verbose=1
-    )
+        model_checkpoint = ModelCheckpoint(
+            filepath=checkpoint_filepath,
+            monitor='val_loss',
+            save_best_only=True,
+            mode='min',
+            verbose=1
+        )
 
-        base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(224, 224, 3))
+        base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(100, 100, 3))
         
         # for camada in base_model.layers:
         #     camada.trainable = False
@@ -118,19 +118,19 @@ def classify_convolutional():
 
         model = Model(inputs=base_model.input, outputs=prediction)
 
-    # Treina o modelo
-    epochs = 150
-    history = model.fit(
-        train_generator,
-        epochs=epochs,
-        validation_data=val_generator,
-        callbacks=[model_checkpoint]
-    )
+        # Treina o modelo
+        epochs = 150
+        history = model.fit(
+            train_generator,
+            epochs=epochs,
+            validation_data=val_generator,
+            callbacks=[model_checkpoint]
+        )
 
-    model.fit(train_generator, epochs=epochs, callbacks=[model_checkpoint], validation_data=val_generator, class_weight=class_weights_dict)
+        model.fit(train_generator, epochs=epochs, callbacks=[model_checkpoint], validation_data=val_generator, class_weight=class_weights_dict)
 
-    model.save(model_path)      
+        model.save(model_path)      
 
-    print('\t FIM Convolucional Categórico')
+        print('\t FIM Convolucional Categórico')
 
     return predicted_classes
