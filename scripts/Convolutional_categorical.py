@@ -6,15 +6,7 @@ from tensorflow.keras.preprocessing import image
 from tensorflow.keras import models, layers, optimizers
 from tensorflow.keras import regularizers
 from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.utils import to_categorical
-from sklearn.preprocessing import LabelEncoder
-from tensorflow.keras.optimizers import Adam 
-from tensorflow.keras.models import Model
-from keras.applications.resnet50 import ResNet50
-from keras.layers import GlobalAveragePooling2D, Dense
-from keras.models import Model
-
-
+from sklearn.utils.class_weight import compute_class_weight
 
 import numpy as np
 import os
