@@ -22,12 +22,12 @@ import os
 input_folder = './output_cell_images'
 save_directory = './models_trained/Convolutional_categorical'
 model_path = os.path.join(save_directory, 'efficientnet_model.h5')
-checkpoint_filepath = os.path.join(save_directory, 'best_model2.h5')
+checkpoint_filepath = os.path.join(save_directory, 'best_model3.h5')
 
 predicted_classes = []
 index_to_label = {0: 'ASC-H', 1: 'ASC-US', 2: 'HSIL', 3: 'LSIL', 4: 'Negative for intraepithelial lesion', 5: 'SCC'}
 
-img_size = (100, 100)
+img_size = (224, 224)
 
 # Função para preparar uma imagem para classificação
 def prepare_image(file_path, img_size):
@@ -106,7 +106,7 @@ def classify_convolutional():
             verbose=1
         )
 
-        base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(100, 100, 3))
+        base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(224, 224, 3))
         
         # for camada in base_model.layers:
         #     camada.trainable = False
