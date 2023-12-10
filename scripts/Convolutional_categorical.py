@@ -7,6 +7,7 @@ from tensorflow.keras import models, layers, optimizers
 from tensorflow.keras import regularizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn.utils.class_weight import compute_class_weight
+from tensorflow.keras.applications import ResNet50
 
 import numpy as np
 import os
@@ -14,12 +15,12 @@ import os
 input_folder = './output_cell_images'
 save_directory = './models_trained/Convolutional_categorical'
 model_path = os.path.join(save_directory, 'efficientnet_model.h5')
-checkpoint_filepath = os.path.join(save_directory, 'best_model3.h5')
+checkpoint_filepath = os.path.join(save_directory, 'best_model12.h5')
 
 predicted_classes = []
 index_to_label = {0: 'ASC-H', 1: 'ASC-US', 2: 'HSIL', 3: 'LSIL', 4: 'Negative for intraepithelial lesion', 5: 'SCC'}
 
-img_size = (224, 224)
+img_size = (100, 100)
 
 # Função para preparar uma imagem para classificação
 def prepare_image(file_path, img_size):
@@ -36,6 +37,7 @@ def classify_image(file_path, model, img_size):
     predictions = model.predict(img_ready)
     predicted_class = np.argmax(predictions, axis=1)
     predicted_label = index_to_label[predicted_class[0]]
+    print(predicted_label)
     return predicted_label
 
 def classify_convolutional():
@@ -62,7 +64,8 @@ def classify_convolutional():
             shear_range=0.2,
             zoom_range=0.2,
             horizontal_flip=True,
-            validation_split=0.2
+            validation_split=0.2,
+            rescale=1./255  
         )
 
         batch_size = 32
@@ -99,7 +102,7 @@ def classify_convolutional():
             verbose=1
         )
 
-        base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(224, 224, 3))
+        base_model = EfficientNetB0(include_top=False, weights='imagenet', input_shape=(100, 100, 3))
         
         # for camada in base_model.layers:
         #     camada.trainable = False
@@ -107,8 +110,8 @@ def classify_convolutional():
         model = models.Sequential()
         model.add(base_model)
         model.add(layers.GlobalAveragePooling2D())
-        model.add(layers.Dense(64, activation='relu'))
-        model.add(layers.Dropout(0.3))
+        model.add(layers.Dense(128, activation='relu'))
+        model.add(layers.Dropout(0.2))
         model.add(layers.Dense(len(labels), activation='softmax'))
 
         model.compile(optimizer=optimizers.Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
@@ -117,7 +120,8 @@ def classify_convolutional():
         class_weights = compute_class_weight(
             class_weight='balanced',
             classes=np.unique(train_generator.classes),
-            y=train_generator.classes)
+            y=train_generator.classes
+        )
 
         # Convertendo os pesos para um dicionário para passar durante o treinamento
         class_weights_dict = dict(enumerate(class_weights))
@@ -138,3 +142,5 @@ def classify_convolutional():
         print('\t FIM Convolucional Categórico')
 
     return predicted_classes
+
+# classify_convolutional()

@@ -148,3 +148,4 @@ def classify_convolutional_binary():
     print('\t FIM Convolucional Binário')
 
     return predicted_classes
+
