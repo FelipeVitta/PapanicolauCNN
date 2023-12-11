@@ -7,7 +7,6 @@ from tensorflow.keras import models, layers, optimizers
 from tensorflow.keras import regularizers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn.utils.class_weight import compute_class_weight
-from tensorflow.keras.applications import ResNet50
 
 import numpy as np
 import os
@@ -37,7 +36,6 @@ def classify_image(file_path, model, img_size):
     predictions = model.predict(img_ready)
     predicted_class = np.argmax(predictions, axis=1)
     predicted_label = index_to_label[predicted_class[0]]
-    print(predicted_label)
     return predicted_label
 
 def classify_convolutional():

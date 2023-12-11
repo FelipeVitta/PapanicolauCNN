@@ -83,15 +83,16 @@ def get_characteristics(file_path):
         # Definindo as coordenadas da semente como o centro da imagem
         centro_x, centro_y = cropped_image_np.shape[1] // 2, cropped_image_np.shape[0] // 2
         seed = (centro_x, centro_y)
+        
+        # Aplicar o Gaussian blur
+        blurred_image = cv2.GaussianBlur(cropped_image_np, (3, 3), 0)
             
         # Aplicar o algoritmo de crescimento de regiões
-        segmented_image = region_growing(cropped_image_np, seed)
-        # Aplicar o Gaussian blur
-        blurred_image = cv2.GaussianBlur(segmented_image, (5, 5), 0)
+        segmented_image = region_growing(blurred_image, seed)
         
         # Aplicar o detector de bordas Sobel
-        sobelx = cv2.Sobel(blurred_image, cv2.CV_64F, 1, 0, ksize=3)
-        sobely = cv2.Sobel(blurred_image, cv2.CV_64F, 0, 1, ksize=3)
+        sobelx = cv2.Sobel(segmented_image, cv2.CV_64F, 1, 0, ksize=3)
+        sobely = cv2.Sobel(segmented_image, cv2.CV_64F, 0, 1, ksize=3)
         sobel = cv2.magnitude(sobelx, sobely)
         
         # Encontrar contornos
@@ -125,10 +126,7 @@ def get_characteristics(file_path):
             perimetro = cv2.arcLength(contorno_central, True)
 
             # Calculando a compacidade
-            compacidade = (perimetro ** 2) / (4 * np.pi * area) if area != 0 else 0
-
-            # Calculando a circularidade
-            circularidade = (4 * np.pi * area) / (perimetro ** 2) if perimetro != 0 else 0
+            compacidade = (4 * np.pi * area) / (perimetro ** 2) if perimetro != 0 else 0
 
             # Calculando a excentricidade
             if len(contorno_central) >= 5:  # Necessário para ajustar uma elipse
@@ -153,4 +151,4 @@ def get_characteristics(file_path):
     return characteristics_list
 
 
-# get_characteristics('./cell_images/e8795423a9b8dadabdfaac3547c17abe.png')
+#get_characteristics('./cell_images/e8795423a9b8dadabdfaac3547c17abe.png')

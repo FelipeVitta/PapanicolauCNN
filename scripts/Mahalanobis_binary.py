@@ -21,8 +21,8 @@ characteristics_and_classes = []
 predicted_classes = []  # Lista para armazenar as classes previstas
 accuracy = ""
 
-# Calcular a distância de Mahalanobis
-def calculate_mahalanobis(class_means_dict, class_covariance_dict):
+# Calcular a distância de Mahalanobis 
+def calculate_mahalanobis(class_means_dict, class_covariance_dict): # matriz de covariancia e médias das classes
     global characteristics_and_predicted_classes
     characteristics_and_predicted_classes = []
     for characteristics, _ in characteristics_and_classes:
@@ -76,8 +76,8 @@ def classify_mahalanobis_binary(nucleus_info):
                 classe = characteristic[4]
                 if(classe != 'Negative for intraepithelial lesion'):
                     classe = 'Positive for intraepithelial lesion'
-                # Area minima para considerar na contagem das métricas
-                if area > 100:                        
+                # Valores minimos para considerar na contagem das métricas
+                if area > 100 and compacidade > 0.04:                        
                     characteristics_and_classes.append(([area, excentricidade, compacidade], classe)) 
             
         # Calcular a média e a matriz de covariância para cada classe

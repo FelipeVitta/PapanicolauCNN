@@ -74,8 +74,8 @@ def classify_mahalanobis(nucleus_info):
                 area = characteristic[2]
                 compacidade = characteristic[3]
                 classe = characteristic[4]
-                # Area minima para considerar na contagem das métricas
-                if area > 100:                        
+                # Valores minimos para considerar na contagem das métricas
+                if area > 100 and compacidade > 0.04:                          
                     characteristics_and_classes.append(([area, excentricidade, compacidade], classe)) 
             
         # Calcular a média e a matriz de covariância para cada classe
