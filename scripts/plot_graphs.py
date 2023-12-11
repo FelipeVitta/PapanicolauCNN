@@ -38,7 +38,7 @@ def plot_dispersion_graph(characteristics_and_classes, binary=False):
     plt.title(title)
     plt.show()
     
-# plotar matriz de confusão binário
+# plotar matriz de confusão
 def plot_confusion_graph(predicted_classes, true_classes, binary=False):
     confusion_mat = confusion_matrix(true_classes, predicted_classes)
     plt.figure(figsize=(8, 6))

@@ -150,5 +150,3 @@ def get_characteristics(file_path):
     # Retorna a lista de características
     return characteristics_list
 
-
-#get_characteristics('./cell_images/e8795423a9b8dadabdfaac3547c17abe.png')

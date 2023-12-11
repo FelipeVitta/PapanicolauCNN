@@ -16,15 +16,12 @@ from sklearn.metrics import accuracy_score
 training_data_directory = './cell_images'
 save_directory = './models_trained/Mahalanobis_binary'
 
-characteristics_and_predicted_classes = []
 characteristics_and_classes = []
 predicted_classes = []  # Lista para armazenar as classes previstas
 accuracy = ""
 
 # Calcular a distância de Mahalanobis 
 def calculate_mahalanobis(class_means_dict, class_covariance_dict): # matriz de covariancia e médias das classes
-    global characteristics_and_predicted_classes
-    characteristics_and_predicted_classes = []
     for characteristics, _ in characteristics_and_classes:
         min_distance = float('inf')
         predicted_class = None
@@ -37,8 +34,6 @@ def calculate_mahalanobis(class_means_dict, class_covariance_dict): # matriz de 
                 predicted_class = classe
         predicted_classes.append(predicted_class)
 
-        characteristics_and_predicted_classes.append([characteristics[0], characteristics[1], characteristics[2], predicted_class]) 
-    
 def classify_mahalanobis_binary(nucleus_info):  
     covariance_path = os.path.join(save_directory, 'class_covariance.joblib')
     means_path = os.path.join(save_directory, 'class_means.joblib')

@@ -67,7 +67,6 @@ def classify_convolutional():
         )
 
         batch_size = 32
-        epochs = 15
 
         train_generator = datagen.flow_from_directory(
             input_folder,
@@ -133,12 +132,9 @@ def classify_convolutional():
             callbacks=[model_checkpoint]
         )
 
-        model.fit(train_generator, epochs=epochs, callbacks=[model_checkpoint], validation_data=val_generator)
-
         model.save(model_path)      
 
         print('\t FIM Convolucional Categórico')
 
     return predicted_classes
 
-# classify_convolutional()
