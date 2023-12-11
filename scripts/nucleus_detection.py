@@ -44,7 +44,7 @@ def region_growing(image, seed):
     neighbors = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     height, width = image.shape
     segmented = np.zeros_like(image, dtype=np.uint8)
-    threshold = image[seed] * 1.25
+    threshold = image[seed] * 1.35
 
     # Pilha para armazenar os pixels a serem verificados
     stack = [seed]
